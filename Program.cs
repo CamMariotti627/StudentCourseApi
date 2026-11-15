@@ -4,7 +4,7 @@ var app = builder.Build();
 //*always - builds app - with web server
 
 app.UseDefaultFiles();  // loads wwwroot/index - must be 1st
-app.UseStaticFiles();   // lets server send files from root
+app.UseStaticFiles();   // lets server send files from wwwroot/index.html
 // *always used when serving a page
 
 
