@@ -1,3 +1,8 @@
+app.UseDefaultFiles();  // loads wwwroot/index - must be 1st
+app.UseStaticFiles();   // lets server send files from root
+// *always used when serving a page
+
+
 var builder = WebApplication.CreateBuilder(args);  
 //*always - sets up web app settings/tools
 var app = builder.Build();
