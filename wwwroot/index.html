@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Course Manager</title>
+</head>
+<body>
+    <h1>Student Courses</h1>
+    <button id="load">Load Courses</button>
+    <table>
+        <thead>
+            <tr><th>Code</th><th>Title</th><th>Credits</th></tr>
+        </thead>
+        <tbody id="courses"></tbody>
+    </table>
+
+<script>
+
+    document.querySelector('#load').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/courses');
+            if (!response.ok) throw new Error('Could not load courses');
+            const courses = await response.json();
+
+            const tableBody = document.querySelector('#courses');
+            tableBody.replaceChildren();
+
+            for (const course of courses) {
+                const row = document.createElement('tr');
+                for (const value of [course.code, course.title, course.credits]) {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                }
+                tableBody.appendChild(row);
+            } 
+        } catch (error) {
+            alert(error.message);
+        }
+});
+
+
+
+
+</script>
+
+</body>
+</html>
