@@ -1,4 +1,3 @@
-
 var builder = WebApplication.CreateBuilder(args);  
 //*always - sets up web app settings/tools
 var app = builder.Build();
@@ -51,6 +50,35 @@ app.MapPost("/api/courses", (CourseInput input) =>
     return Results.Created($"/api/courses/{newId}", course);
 });
 
+// PUT /api/courses/{id:int}" -> update (200), missing 404, bad data 400
+
+app.MapPut("/api/courses/{id:int}", (int id, CourseInput input) =>
+{
+    int index = courses.FindIndex(c => c.Id == id);
+    if (index == -1)
+        return Results.NotFound();
+    
+    string? error = ValidateCourse(input);
+    if (error is not null)
+        return Results.BadRequest(error);
+    
+    var updated = new Course(id, input.Code, input.Title, input.Credits, input.Instructor);
+    courses[index] = updated;
+    return Results.Ok(updated);
+});
+
+// DELETE /api/courses/{id} -> removed(204) missing (404)
+app.MapDelete("/api/courses/{id:int}", (int id) =>
+{
+    var course = courses.FirstOrDefault(c => c.Id == id);
+    if (course is null)
+        return Results.NotFound();
+
+    courses.Remove(course);
+    return Results.NoContent();
+});
+
+
 
 app.Run();
 //^^ always last line of code
@@ -77,3 +105,4 @@ record Course(int Id, string Code, string Title, int Credits, string Instructor)
 // required model: one line makes whole data type
 record CourseInput(string Code, string Title, int Credits, string Instructor);
 // what users send to add/edit a course - server assigns ID so omit
+
