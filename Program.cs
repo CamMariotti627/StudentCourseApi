@@ -20,25 +20,36 @@ var courses = new List<Course>
 
 };
 
-// GET all
-app.MapGet("/api/courses", () => Results.Ok(courses));
-// ^^^^ recurring framework:
-// GET /api/courses -> 200 OK + every course as JSON
-
-// GET 
-app.MapGet("/api/courses/{id:int}", (int id) =>
-// ^^^^
+// GET
 // *recurring framework^^ anatomy below:
-// app.MapVerb("path", () => Results.Status(data)); 
-// path & data change depedent on HTTP verb (GET/POST/PUT/DELETE)
+//    app.MapVerb("path", () => Results.Status(data));
+//    path & data change depedent on HTTP verb (GET/POST/PUT/DELETE)
+//    *recurring framework- find 1st course w matching id, null if none
+//    is it missing?
+app.MapGet("/api/courses/{id:int}", (int id) =>
 {
     var course = courses.FirstOrDefault(c => c.Id == id);
-// *recurring framework- find 1st course w matching id, null if none
     return course is null
-// is it missing?
-        ? Results.NotFound()  // yes-> 404 not found
-        : Results.Ok(course); // no -> 200 OK + course as JSON
-});                           // end of route
+        ? Results.NotFound()     // yes-> 404 not found
+        : Results.Ok(course);    // no -> 200 OK + course as JSON
+});                              // end of route
+
+
+// GET - with Search parameter for all functions
+// GET /api/courses 
+// GET /api/courses?q=smith - only courses where code/title/instructor = smith
+app.MapGet("/api/courses", (string? q) =>
+{
+    if (string.IsNullOrWhiteSpace(q))
+        return Results.Ok(courses);
+
+    var matches = courses
+        .Where(c => c.Code.Contains(q, StringComparison.OrdinalIgnoreCase)
+            || c.Title.Contains(q, StringComparison.OrdinalIgnoreCase)
+            || c.Instructor.Contains(q, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+    return Results.Ok(matches);  
+});
 
 // POST /api/courses -> add course (201) or reject bad data (400)
 app.MapPost("/api/courses", (CourseInput input) =>

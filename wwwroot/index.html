@@ -1,31 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Student Course Manager</title>
+<!DOCTYPE html>    <!--declares html file -->
+<html lang="en">   <!--declares base lang-->
+<head>             <!--decl head-->
+    <meta charset="UTF-8">  <!--meta charset-->
+    <title>Student Course Manager</title> <!--title set as Student Course Manager-->
 </head>
 <body>
-    <h1>Student Courses</h1>
-    <button id="load">Load Courses</button>
-    <table>
+    <h1>Student Courses</h1>                        <!--header 1 displays Student Courses-->
+    <button id="load">Load Courses</button>         <!--creates button named load that displays "Load Courses"-->
+    <table>                                         <!--creates table with header rows displaying code title & credits-->
         <thead>
             <tr><th>Code</th><th>Title</th><th>Credits</th></tr>
         </thead>
-        <tbody id="courses"></tbody>
+        <tbody id="courses"></tbody>                <!--declares id for body of table as "courses" that display when req'd-->
     </table>
 
-<script>
+<script>  // all JS in <script> section, always in body
 
-    document.querySelector('#load').addEventListener('click', async () => {
-        try {
-            const response = await fetch('/api/courses');
-            if (!response.ok) throw new Error('Could not load courses');
-            const courses = await response.json();
+    document.querySelector('#load').addEventListener('click', async () => { //query selector uses "load" from button when clicked
+        try {                                                               //async=has await function - continues while waiting
+            const response = await fetch('/api/courses');                   //await response while fetching from /api/courses
+            if (!response.ok) throw new Error('Could not load courses');    //if NOT "ok" - 200 code throws error shown
+            const courses = await response.json();                          //
 
-            const tableBody = document.querySelector('#courses');
+            const tableBody = document.querySelector('#courses');           //replaces empty cells in table with retrieved 
             tableBody.replaceChildren();
 
-            for (const course of courses) {
+            for (const course of courses) {                                 // for each course in courses 
                 const row = document.createElement('tr');
                 for (const value of [course.code, course.title, course.credits]) {
                     const cell = document.createElement('td');
@@ -33,13 +33,12 @@
                     row.appendChild(cell);
                 }
                 tableBody.appendChild(row);
-            } 
+            }
         } catch (error) {
             alert(error.message);
         }
-});
-
-
+}
+);
 
 
 </script>
